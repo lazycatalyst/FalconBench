@@ -14,6 +14,7 @@ use solana_sdk::{
     signer::Signer,
     system_instruction,
 };
+use rand::Rng;
 use std::{env, net::ToSocketAddrs, str::FromStr, sync::Arc, time::Duration};
 
 // ── Constants ───────────────────────────────────────────────────────────────
@@ -33,6 +34,24 @@ fn ata_prog()   -> Pubkey { pk("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL") }
 fn evt_auth()   -> Pubkey { pk("GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR") }
 fn fee_prog()   -> Pubkey { pk("pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ") }
 fn sys()        -> Pubkey { solana_sdk::system_program::id() }
+
+const FALCON_TIP_ACCOUNTS: &[&str] = &[
+    "Fa1con11xLjPddfzRwRUB16sbFZggp2JeJkCeWREyR8X",
+    "Fa1con11TM1RuAQzbQzYjTy4Ekfap9Lnc9fnEbQYEd6Q",
+    "Fa1con113Bvi76nS5AzUiRDC2fqjfzkNMUNRLgQybMYt",
+    "Fa1con1QGHJK232s8yZpzZZwqPexnAKcoyKj626LNsMv",
+    "Fa1con1zUzb6qJVFz5tNkPq1Ahm8H1qKW7Q48252QbkQ",
+    "Fa1con16d3MSwd3SAiwvr2LwgkpE7ot8zntbpuec8HAx",
+    "Fa1con1i7mpa7Qc6epYJ6r4P9AbU77DFFz173r59Df1x",
+    "Fa1con18nWn8TdAGL7JX8PertfMUGVSc899NawokJ4Bq",
+    "Fa1con1GKusK2EqsfzrDzGPaYZSxQtFGzJiRMMU9Zm2g",
+    "Fa1con1RDwVwM9VrJ53CwVefD3VU9c58EMpDawV7fLMi",
+];
+
+fn random_falcon_tip() -> Pubkey {
+    let idx = rand::rng().random_range(0..FALCON_TIP_ACCOUNTS.len());
+    pk(FALCON_TIP_ACCOUNTS[idx])
+}
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -63,7 +82,7 @@ fn build_buy_tx(keypair: &Keypair, nonce_value: Hash) -> Result<Vec<u8>> {
     let wallet = keypair.pubkey();
 
     let nonce_account      = env_pk("NONCE_ACCOUNT")?;
-    let falcon_tip_wallet  = env_pk("FALCON_TIP_WALLET")?;
+    let falcon_tip_wallet  = random_falcon_tip();
     let falcon_tip: u64    = env::var("FALCON_TIP_LAMPORTS").unwrap_or("1000000".into()).parse()?;
     let compute_price: u64 = env::var("COMPUTE_UNIT_PRICE").unwrap_or("500000".into()).parse()?;
     let buy_lamports: u64  = env::var("BUY_AMOUNT_LAMPORTS").context("BUY_AMOUNT_LAMPORTS not set")?.parse()?;

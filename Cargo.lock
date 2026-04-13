@@ -1005,6 +1005,7 @@ dependencies = [
  "dotenvy",
  "falcon-client",
  "quinn",
+ "rand 0.9.3",
  "rcgen",
  "rustls",
  "solana-rpc-client",
